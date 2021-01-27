@@ -13,7 +13,7 @@ BearSSL::CertStore certStore;
 #define VERS_URL "https://raw.githubusercontent.com/agnath18K/myGarden/main/bin/version"
 #define Firm_URL "https://raw.githubusercontent.com/agnath18K/myGarden/main/bin/firmware.bin"
 
-double Firm_Ver = 1.00;
+double Firm_Ver = 1.01;
 double Lat_Ver;
 
 const char* host = HOST_URL;
@@ -80,7 +80,7 @@ void Firmware_Update() {
     return; }
 
   String url = VERS_URL;
-  Serial.print("requesting URL: ");
+  Serial.print("Requestin Version : ");
   Serial.println(url);
 
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
@@ -88,11 +88,11 @@ void Firmware_Update() {
                "User-Agent: BuildFailureDetectorESP8266\r\n" +
                "Connection: close\r\n\r\n");
 
-  Serial.println("request sent");
+  Serial.println("Request sent");
   while (client.connected()) {
     String line = client.readStringUntil('\n');
     if (line == "\r") {
-      Serial.println("headers received");
+      Serial.println("Headers received");
       break; }
      }
   String line = client.readStringUntil('\n');
@@ -104,11 +104,12 @@ void Firmware_Update() {
 // version check
 
   if(Firm_Ver>=Lat_Ver)
-  Serial.println("latest ver");
+  Serial.println("Device Running On Latest Firmware");
   else
   {
   // Update start
-  Serial.println("need update");
+  Serial.println("\nNew Firmware Found!");
+  Serial.println("\nStarting Upgrade\n");
   ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW); 
   t_httpUpdate_return ret = ESPhttpUpdate.update(client, Firm_URL);
 
