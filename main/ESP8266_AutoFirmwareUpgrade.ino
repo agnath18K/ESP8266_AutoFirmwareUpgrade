@@ -10,7 +10,7 @@ BearSSL::CertStore certStore;
 #define WIFI_PASSWORD "S3I5@k6e7"
 
 #define HOST_URL "raw.githubusercontent.com";
-#define VERS_URL "https://raw.githubusercontent.com/agnath18K/myGarden/main/bin/version.txt"
+#define VERS_URL "https://raw.githubusercontent.com/agnath18K/myGarden/main/bin/version"
 #define Firm_URL "https://raw.githubusercontent.com/agnath18K/myGarden/main/bin/firmware.bin"
 
 double Firm_Ver = 1.00;
