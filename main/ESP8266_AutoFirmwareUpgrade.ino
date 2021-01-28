@@ -10,8 +10,8 @@ BearSSL::CertStore certStore;
 #define WIFI_PASSWORD "S3I5@k6e7"
 
 #define HOST_URL "raw.githubusercontent.com";
-#define VERS_URL "https://raw.githubusercontent.com/agnath18K/myGarden/main/bin/version"
-#define Firm_URL "https://raw.githubusercontent.com/agnath18K/myGarden/main/bin/firmware.bin"
+#define VERS_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/version"
+#define Firm_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/firmware.bin"
 
 double Firm_Ver = 1.01;
 double Lat_Ver;
@@ -57,57 +57,50 @@ void setClock() {
     delay(500);
     Serial.print(F("."));
     now = time(nullptr);
-  }
-
-  Serial.println(F(""));
-  struct tm timeinfo;
-  gmtime_r(&now, &timeinfo);
-  Serial.print(F("Current time: "));
-  Serial.print(asctime(&timeinfo));
-}
-
-        
+  } }
+      
 void Firmware_Update() {
   
-// host connection check
  BearSSL::WiFiClientSecure client;
  client.setTrustAnchors(&cert);
- Serial.print("connecting to ");
- Serial.println(host);
+ Serial.print("\nConnecting to host.");
+
  
  if (!client.connect(host, httpsPort)) {
-    Serial.println("connection failed");
+    Serial.println("Connection Failed");
+
+    delay(30000);
+    ESP.restart();
+    
     return; }
+  Serial.print("\nSuccess.");
 
   String url = VERS_URL;
-  Serial.print("Requestin Version : ");
-  Serial.println(url);
+  Serial.print("\nCurrent Firmware Version\n");
+  Serial.print(Firm_Ver);
+  Serial.print("\nRequesting Latest Firmware Version : ");
 
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "User-Agent: BuildFailureDetectorESP8266\r\n" +
                "Connection: close\r\n\r\n");
 
-  Serial.println("Request sent");
+  Serial.println("Request Sent");
   while (client.connected()) {
     String line = client.readStringUntil('\n');
     if (line == "\r") {
-      Serial.println("Headers received");
+      Serial.println("Headers Received");
       break; }
      }
   String line = client.readStringUntil('\n');
   Lat_Ver = line.toDouble();
+  Serial.print("\nLatest Firmware Version\n");
   Serial.println(Lat_Ver);
-
-// host connected version stored to var
-
-// version check
 
   if(Firm_Ver>=Lat_Ver)
   Serial.println("Device Running On Latest Firmware");
   else
   {
-  // Update start
   Serial.println("\nNew Firmware Found!");
   Serial.println("\nStarting Upgrade\n");
   ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW); 
@@ -127,10 +120,9 @@ void Firmware_Update() {
         break; } } }
 
 void setup() {
-
  Serial.begin(115200);
  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
- Serial.print("Connecting to Wi-Fi");
+ Serial.print("\n\nConnecting to Wi-Fi");
  while (WiFi.status() != WL_CONNECTED)
   {
     Serial.print(".");
