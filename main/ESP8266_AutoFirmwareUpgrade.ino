@@ -1,3 +1,26 @@
+/*
+  
+# ESP8266_AutoFirmwareUpgrade
+Automatic OTA Firmware Upgrade For ESP8266.
+Using Github as host Server.
+
+-> How it works?
+
+* This program download and flash the lastest bin file available in your GitHub Repository whenever the Firmware_Version of the arduino code detect a newer version number from the "version" file of your repo.
+
+-> How to use?
+
+* Export your code to bin file and store it in your repository.
+* Create a text file in your repo with your Firmware version number.
+* Copy the download link of bin file as well as the "version" text file and paste the same in the HOST_URL & VERS_URL.
+
+
+* Using DigiCert High Assurance EV Root CA : Valid Until 2031
+
+
+  agnath18@gmail.com
+*/
+
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
@@ -13,7 +36,7 @@ BearSSL::CertStore certStore;
 #define VERS_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/version"
 #define Firm_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/firmware.bin"
 
-double Firm_Ver = 1.01;
+double Firm_Ver = 1.00;
 double Lat_Ver;
 
 const char* host = HOST_URL;
@@ -46,11 +69,17 @@ vEsXCS+0yx5DaMkHJ8HSXPfqIbloEpw8nL+e/IBcm2PN7EeqJSdnoDfzAIJ9VNep
 )EOF";
 X509List cert(trustRoot);
 
+void Conn_Error()
+{
+  delay(30000);
+  ESP.restart();
+}
+
 // Set time via NTP, as required for x.509 validation
 void setClock() {
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // UTC
 
-  Serial.print(F("Waiting for NTP time sync: "));
+  Serial.print("Waiting for NTP time sync: ");
   time_t now = time(nullptr);
   while (now < 8 * 3600 * 2) {
     yield();
@@ -64,14 +93,10 @@ void Firmware_Update() {
  BearSSL::WiFiClientSecure client;
  client.setTrustAnchors(&cert);
  Serial.print("\nConnecting to host.");
-
  
  if (!client.connect(host, httpsPort)) {
     Serial.println("Connection Failed");
-
-    delay(30000);
-    ESP.restart();
-    
+    Conn_Error();
     return; }
   Serial.print("\nSuccess.");
 
@@ -136,4 +161,13 @@ void setup() {
 
  void loop() {
  Firmware_Update();
+   
+   
+   
+   
+   // Put Your Code Here
+   
+   
+   
+   
  delay(10000); }
