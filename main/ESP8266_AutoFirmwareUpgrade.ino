@@ -1,5 +1,4 @@
 /*
-  
 # ESP8266_AutoFirmwareUpgrade
 Automatic OTA Firmware Upgrade For ESP8266.
 Using Github as host Server.
@@ -17,10 +16,8 @@ Using Github as host Server.
 
 * Using DigiCert High Assurance EV Root CA : Valid Until 2031
 
-
   agnath18@gmail.com
 */
-
 
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
@@ -37,8 +34,11 @@ BearSSL::CertStore certStore;
 #define VERS_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/version"
 #define Firm_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/firmware.bin"
 
-double Firm_Ver = 1.02;
+double Firm_Ver = 1.04;
 double Lat_Ver;
+
+const unsigned long Update_Interval = 30000;
+unsigned long counter = 0;
 
 const char* host = HOST_URL;
 const int httpsPort = 443;
@@ -97,7 +97,7 @@ void Firmware_Update() {
 
  
  if (!client.connect(host, httpsPort)) {
-    Serial.println("\nFailed");
+    Serial.println("Failed");
     Error_Con();
     return; }
   Serial.print("Success\n");
@@ -118,7 +118,7 @@ void Firmware_Update() {
      }
   String line = client.readStringUntil('\n');
   Lat_Ver = line.toDouble();
-  Serial.print("\nLatest Firmware Version : ");
+  Serial.print("\nLatest Firmware Version   : ");
   Serial.println(Lat_Ver);
 
   if(Firm_Ver>=Lat_Ver)
@@ -159,5 +159,9 @@ void setup() {
  setClock(); }
 
  void loop() {
- Firmware_Update();
- delay(10000); }
+  
+  if(millis() - counter >= Update_Interval) {
+  Firmware_Update();
+  counter = millis(); }
+  
+  }
