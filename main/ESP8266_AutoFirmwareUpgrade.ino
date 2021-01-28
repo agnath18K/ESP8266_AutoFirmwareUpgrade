@@ -21,6 +21,7 @@ Using Github as host Server.
   agnath18@gmail.com
 */
 
+
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
@@ -36,7 +37,7 @@ BearSSL::CertStore certStore;
 #define VERS_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/version"
 #define Firm_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/firmware.bin"
 
-double Firm_Ver = 1.00;
+double Firm_Ver = 1.02;
 double Lat_Ver;
 
 const char* host = HOST_URL;
@@ -69,17 +70,17 @@ vEsXCS+0yx5DaMkHJ8HSXPfqIbloEpw8nL+e/IBcm2PN7EeqJSdnoDfzAIJ9VNep
 )EOF";
 X509List cert(trustRoot);
 
-void Conn_Error()
-{
-  delay(30000);
-  ESP.restart();
-}
+void Error_Con() {
+    Serial.print("\nESP Restart In 30Seconds\n");
+    delay(30000);
+    Serial.print("\n\nRestarting ESP\n\n");
+    ESP.restart(); }
 
 // Set time via NTP, as required for x.509 validation
 void setClock() {
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // UTC
 
-  Serial.print("Waiting for NTP time sync: ");
+  Serial.print(F("Waiting for NTP time sync: "));
   time_t now = time(nullptr);
   while (now < 8 * 3600 * 2) {
     yield();
@@ -92,38 +93,36 @@ void Firmware_Update() {
   
  BearSSL::WiFiClientSecure client;
  client.setTrustAnchors(&cert);
- Serial.print("\nConnecting to host.");
+ Serial.print("\nConnection to host : ");
+
  
  if (!client.connect(host, httpsPort)) {
-    Serial.println("Connection Failed");
-    Conn_Error();
+    Serial.println("\nFailed");
+    Error_Con();
     return; }
-  Serial.print("\nSuccess.");
+  Serial.print("Success\n");
 
   String url = VERS_URL;
-  Serial.print("\nCurrent Firmware Version\n");
+  Serial.print("\nCurrent Firmware Version : ");
   Serial.print(Firm_Ver);
-  Serial.print("\nRequesting Latest Firmware Version : ");
 
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "User-Agent: BuildFailureDetectorESP8266\r\n" +
                "Connection: close\r\n\r\n");
 
-  Serial.println("Request Sent");
   while (client.connected()) {
     String line = client.readStringUntil('\n');
     if (line == "\r") {
-      Serial.println("Headers Received");
       break; }
      }
   String line = client.readStringUntil('\n');
   Lat_Ver = line.toDouble();
-  Serial.print("\nLatest Firmware Version\n");
+  Serial.print("\nLatest Firmware Version : ");
   Serial.println(Lat_Ver);
 
   if(Firm_Ver>=Lat_Ver)
-  Serial.println("Device Running On Latest Firmware");
+  Serial.println("\nDevice Running On Latest Firmware");
   else
   {
   Serial.println("\nNew Firmware Found!");
@@ -161,13 +160,4 @@ void setup() {
 
  void loop() {
  Firmware_Update();
-   
-   
-   
-   
-   // Put Your Code Here
-   
-   
-   
-   
  delay(10000); }
