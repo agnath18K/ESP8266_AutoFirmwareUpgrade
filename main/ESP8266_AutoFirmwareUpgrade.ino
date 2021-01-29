@@ -16,6 +16,7 @@ Using Github as host Server.
 
 * Using DigiCert High Assurance EV Root CA : Valid Until 2031
 
+
   agnath18@gmail.com
 */
 
@@ -27,8 +28,8 @@ Using Github as host Server.
 BearSSL::CertStore certStore;
 #include <time.h>
 
-#define WIFI_SSID "X18"
-#define WIFI_PASSWORD "S3I5@k6e7"
+#define WIFI_SSID "esp"
+#define WIFI_PASSWORD ""
 
 #define HOST_URL "raw.githubusercontent.com";
 #define VERS_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/version"
@@ -40,6 +41,7 @@ double Lat_Ver;
 const unsigned long Update_Interval = 60000;
 unsigned long counter = 0;
 
+int Error_Count=1;
 
 const char* host = HOST_URL;
 const int httpsPort = 443;
@@ -72,26 +74,52 @@ vEsXCS+0yx5DaMkHJ8HSXPfqIbloEpw8nL+e/IBcm2PN7EeqJSdnoDfzAIJ9VNep
 X509List cert(trustRoot);
 
 void Error_Con() {
-    Serial.print("\nProceeding ESP Restart In 60Seconds\n");
+  Serial.print("\nError Detected.\nError Count : ");
+  Serial.print(Error_Count);
+  Error_Count+=1;
+  if(Error_Count>3)  {
+    Serial.print("\nProceeding ESP Restart In 60 Seconds\n");
+    Error_Count=0;
     delay(60000);
     Serial.print("\n\nRestarting ESP\n\n");
     ESP.restart(); }
+  else {
+    Serial.println("\nRestarting WiFi Connection");
+    Connect_WiFi(); } }
+
+void Connect_WiFi() {
+ WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+ Serial.print("\n\nConnecting to Wi-Fi");
+ int try_count=0;
+ while (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print(".");
+    delay(300);
+    try_count+=1;
+    if(try_count>=100) {
+    Serial.println("\nConnection taking too long.");
+    Error_Con(); }
+  }
+ Serial.println();
+ Serial.print("Connected with IP: ");
+ Serial.println(WiFi.localIP());
+ Serial.println();
+ setClock(); }
 
 // Set time via NTP, as required for x.509 validation
 void setClock() {
-  
+  int ntp_count=0;
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // UTC
   Serial.print(F("Waiting for NTP time sync: "));
   time_t now = time(nullptr);
-  int ntp_count=0;
   while (now < 8 * 3600 * 2) {
     yield();
     delay(500);
     Serial.print(F("."));
     now = time(nullptr);
     ntp_count+=1;
-    if(ntp_count>100) {
-    Serial.println("/nConnection taking too long.");
+    if(ntp_count>=100) {
+    Serial.println("\nConnection taking too long.");
     Error_Con(); }
   } }
       
@@ -148,30 +176,17 @@ void Firmware_Update() {
         Serial.println("FIRMWARE_UPDATE_OK");
         break; } } }
 
-void setup() {
+void setup()
+{
  Serial.begin(115200);
- WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
- Serial.print("\n\nConnecting to Wi-Fi");
- int try_count=0;
- while (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.print(".");
-    delay(300);
-    try_count+=1;
-    if(try_count>100) {
-    Serial.println("/nConnection taking too long.");
-    Error_Con(); }
-  }
- Serial.println();
- Serial.print("Connected with IP: ");
- Serial.println(WiFi.localIP());
- Serial.println();
- setClock(); }
+ Serial.print("\n");
+ Connect_WiFi();
+ setClock();
+ }
 
- void loop() {
-  
+ void loop()
+ {
   if(millis() - counter >= Update_Interval) {
   Firmware_Update();
   counter = millis(); }
-
   }
