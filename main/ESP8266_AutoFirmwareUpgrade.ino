@@ -37,8 +37,9 @@ BearSSL::CertStore certStore;
 double Firm_Ver = 1.04;
 double Lat_Ver;
 
-const unsigned long Update_Interval = 30000;
+const unsigned long Update_Interval = 60000;
 unsigned long counter = 0;
+
 
 const char* host = HOST_URL;
 const int httpsPort = 443;
@@ -71,31 +72,35 @@ vEsXCS+0yx5DaMkHJ8HSXPfqIbloEpw8nL+e/IBcm2PN7EeqJSdnoDfzAIJ9VNep
 X509List cert(trustRoot);
 
 void Error_Con() {
-    Serial.print("\nESP Restart In 30Seconds\n");
-    delay(30000);
+    Serial.print("\nProceeding ESP Restart In 60Seconds\n");
+    delay(60000);
     Serial.print("\n\nRestarting ESP\n\n");
     ESP.restart(); }
 
 // Set time via NTP, as required for x.509 validation
 void setClock() {
+  
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // UTC
-
   Serial.print(F("Waiting for NTP time sync: "));
   time_t now = time(nullptr);
+  int ntp_count=0;
   while (now < 8 * 3600 * 2) {
     yield();
     delay(500);
     Serial.print(F("."));
     now = time(nullptr);
+    ntp_count+=1;
+    if(ntp_count>100) {
+    Serial.println("/nConnection taking too long.");
+    Error_Con(); }
   } }
       
 void Firmware_Update() {
-  
+ 
  BearSSL::WiFiClientSecure client;
  client.setTrustAnchors(&cert);
  Serial.print("\nConnection to host : ");
 
- 
  if (!client.connect(host, httpsPort)) {
     Serial.println("Failed");
     Error_Con();
@@ -147,10 +152,15 @@ void setup() {
  Serial.begin(115200);
  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
  Serial.print("\n\nConnecting to Wi-Fi");
+ int try_count=0;
  while (WiFi.status() != WL_CONNECTED)
   {
     Serial.print(".");
     delay(300);
+    try_count+=1;
+    if(try_count>100) {
+    Serial.println("/nConnection taking too long.");
+    Error_Con(); }
   }
  Serial.println();
  Serial.print("Connected with IP: ");
@@ -163,5 +173,5 @@ void setup() {
   if(millis() - counter >= Update_Interval) {
   Firmware_Update();
   counter = millis(); }
-  
+
   }
