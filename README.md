@@ -22,4 +22,5 @@ Delete the ESP.restart in the Error_Conn() and divert the code to your loop() fu
 This way you can use the code for Offline activities.
 
 
-  angath18 :)                                                        agnath18@gmail.com
+  angath18 :) 
+  agnath18@gmail.com
