@@ -107,7 +107,7 @@ void Connect_WiFi() {
 void setClock() {
   int ntp_count=0;
   configTime(0, 0, "pool.ntp.org", "time.nist.gov"); 
-  Serial.print(F("Waiting for NTP time sync: "));
+  Serial.print(F("\nWaiting for NTP time sync: "));
   time_t now = time(nullptr);
   while (now < 8 * 3600 * 2) {
     yield();
