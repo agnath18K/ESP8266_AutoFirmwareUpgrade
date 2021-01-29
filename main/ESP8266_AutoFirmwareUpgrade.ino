@@ -28,23 +28,21 @@ Using Github as host Server.
 BearSSL::CertStore certStore;
 #include <time.h>
 
-#define WIFI_SSID "esp"
-#define WIFI_PASSWORD ""
+#define WIFI_SSID "YOUR SSID"
+#define WIFI_PASSWORD "YOUR WIFI PASSWORD"
 
 #define HOST_URL "raw.githubusercontent.com";
 #define VERS_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/version"
 #define Firm_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/firmware.bin"
 
-double Firm_Ver = 1.04;
-double Lat_Ver;
-
+double Firm_Ver = 1.00;
 const unsigned long Update_Interval = 60000;
-unsigned long counter = 0;
-
-int Error_Count=1;
-
-const char* host = HOST_URL;
 const int httpsPort = 443;
+
+unsigned long counter = 0;
+double Lat_Ver;
+int Error_Count=1;
+const char* host = HOST_URL;
 
 const char trustRoot[] PROGMEM = R"EOF(
 -----BEGIN CERTIFICATE-----
@@ -106,10 +104,9 @@ void Connect_WiFi() {
  Serial.println();
  setClock(); }
 
-// Set time via NTP, as required for x.509 validation
 void setClock() {
   int ntp_count=0;
-  configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // UTC
+  configTime(0, 0, "pool.ntp.org", "time.nist.gov"); 
   Serial.print(F("Waiting for NTP time sync: "));
   time_t now = time(nullptr);
   while (now < 8 * 3600 * 2) {
@@ -120,8 +117,7 @@ void setClock() {
     ntp_count+=1;
     if(ntp_count>=100) {
     Serial.println("\nConnection taking too long.");
-    Error_Con(); }
-  } }
+    Error_Con(); } } }
       
 void Firmware_Update() {
  
