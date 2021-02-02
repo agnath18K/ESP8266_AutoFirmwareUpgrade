@@ -25,7 +25,7 @@ Delete the ESP.restart in the Error_Conn() and divert the code to your loop() fu
 This way you can use the code for Offline activities.
 
 
-  angath18 :) 
+  agnath18 :) 
 
 */
 
@@ -115,7 +115,7 @@ void Connect_WiFi() {
 
 void setClock() {
   int ntp_count=0;
-  configTime(0, 0, "pool.ntp.org", "time.nist.gov"); 
+  configTime(0, 0, "pool.ntp.org", "time.google.com"); 
   Serial.print(F("\nWaiting for NTP time sync: "));
   time_t now = time(nullptr);
   while (now < 8 * 3600 * 2) {
