@@ -156,7 +156,9 @@ void Firmware_Update() {
   Lat_Ver = line.toDouble();
   Serial.print("\nLatest Firmware Version   : ");
   Serial.println(Lat_Ver);
-
+  if(Lat_Ver==404.00)
+  Serial.println("Connection Failed \n Failed to retrieve Version file. /n");
+  else {
   if(Firm_Ver>=Lat_Ver)
   Serial.println("\nDevice Running On Latest Firmware");
   else
@@ -177,7 +179,7 @@ void Firmware_Update() {
 
       case HTTP_UPDATE_OK:
         Serial.println("FIRMWARE_UPDATE_OK");
-        break; } } }
+        break; } } } }
 
 void setup()
 {
