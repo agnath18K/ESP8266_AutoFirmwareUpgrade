@@ -157,7 +157,7 @@ void Firmware_Update() {
   Serial.print("\nLatest Firmware Version   : ");
   Serial.println(Lat_Ver);
   if(Lat_Ver==404.00)
-  Serial.println("Connection Failed \n Failed to retrieve Version file. /n");
+  Serial.println("\nFailed to retrieve Version file.\nSkipping Firmware Check\n");
   else {
   if(Firm_Ver>=Lat_Ver)
   Serial.println("\nDevice Running On Latest Firmware");
