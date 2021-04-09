@@ -32,7 +32,7 @@ BearSSL::CertStore certStore;
 #include <time.h>
 
 #define WIFI_SSID "agnath18"
-#define WIFI_PASSWORD "DF87@k6e7"
+#define WIFI_PASSWORD "123456789"
 
 #define HOST_URL "raw.githubusercontent.com";
 #define VERS_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/version"
