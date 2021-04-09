@@ -38,7 +38,7 @@ BearSSL::CertStore certStore;
 #define VERS_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/version"
 #define Firm_URL "https://raw.githubusercontent.com/agnath18K/ESP8266_AutoFirmwareUpgrade/main/bin/firmware.bin"
 
-double Firm_Ver = 1.05;
+double Firm_Ver = 1.00;
 const unsigned long Update_Interval = 60000;
 const int httpsPort = 443;
 
